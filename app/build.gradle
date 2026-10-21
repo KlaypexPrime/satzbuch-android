@@ -12,9 +12,9 @@ android {
         applicationId 'de.klaypex.satzbuch'
         minSdk 29
         targetSdk 34
-        // +100 so builds from the fresh repo count as newer than the old ones (update keeps your data)
-        versionCode runNumber + 100
-        versionName "1.1.${runNumber}"
+        // +1000 so builds from a fresh repo count as newer than the old ones (update keeps your data)
+        versionCode runNumber + 1000
+        versionName "1.2.${runNumber}"
     }
 
     // Fixed key so every new build installs as an update over the old one (your data stays).
