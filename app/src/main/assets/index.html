@@ -38,7 +38,7 @@ h1,h2,h3{font-family:var(--f-display);text-transform:uppercase;text-wrap:balance
 header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-block:22px 10px;flex-wrap:wrap;border-bottom:4px solid var(--rule)}
 header.top h1{font-size:44px;font-weight:800;line-height:.9}
 .weekline{font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.06em}
-nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);display:grid;grid-template-columns:repeat(3,1fr);border-bottom:2px solid var(--rule);margin-bottom:20px}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);display:grid;grid-template-columns:repeat(4,1fr);border-bottom:2px solid var(--rule);margin-bottom:20px}
 nav.tabs button{font:700 15px var(--f-display);text-transform:uppercase;letter-spacing:.08em;border:0;border-right:1px solid var(--hair);background:var(--paper);color:var(--mid);padding:12px 2px;cursor:pointer}
 nav.tabs button:last-child{border-right:0}
 nav.tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
@@ -86,6 +86,37 @@ select,input[type=text],input[type=number],input[type=date]{background:var(--pap
 .prbox{border:3px solid var(--rule);padding:12px 14px;display:grid;gap:6px}
 .prbox h2{font-size:24px}
 .prbox li{font-size:14px}
+.thumb{flex:none;width:56px;height:56px;border:1px solid var(--rule);background:#fff;padding:0;cursor:zoom-in;overflow:hidden;display:grid;place-items:center}
+.thumb img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.05)}
+.thumb.none{cursor:default;background:var(--tint);font:600 9px var(--f-mono);color:var(--mid);text-transform:uppercase;text-align:center;line-height:1.2}
+.thumb.sm{width:44px;height:44px}
+.chk.wchk{flex:none;width:42px;height:38px;border:1px solid var(--rule);background:var(--paper);cursor:pointer;font-weight:700;color:var(--hair)}
+.chk.wchk[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.g-warm{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 12px;align-items:center}
+.pick-row{display:flex;gap:10px;align-items:flex-end}
+.pick-row > label{flex:1;min-width:0}
+.picker{padding:12px 14px;display:grid;gap:10px}
+.picker h2{font-size:24px}
+.ex-head .titlewrap{display:flex;gap:12px;align-items:flex-start;min-width:0}
+.ex{grid-template-columns:minmax(0,1fr)}
+.ex-head h3,.cat-item b{overflow-wrap:anywhere;hyphens:auto}
+.cat-item .pr{flex:none}
+.cat-item .mark{flex:none}
+.ex-head .titlewrap > div{min-width:0}
+.modal{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.72);display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal .sheet{background:var(--paper);border:3px solid var(--rule);width:100%;max-width:520px;max-height:100%;overflow:auto;display:grid}
+.modal .frame{background:#fff;border-bottom:2px solid var(--rule);position:relative}
+.modal .frame img{display:block;width:100%;height:auto;filter:grayscale(1) contrast(1.05)}
+.modal .frame .step{position:absolute;left:8px;top:8px;background:#000;color:#fff;font:600 11px var(--f-mono);padding:2px 6px;text-transform:uppercase}
+.modal .info{padding:12px 14px;display:grid;gap:8px}
+.modal .info h2{font-size:26px;line-height:1.05}
+.cat-filter{display:flex;gap:6px;flex-wrap:wrap}
+.cat-filter button{border:1px solid var(--rule);background:var(--paper);padding:5px 10px;font:700 13px var(--f-display);text-transform:uppercase;letter-spacing:.06em;cursor:pointer}
+.cat-filter button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.cat-list{display:grid;border-top:2px solid var(--rule)}
+.cat-item{display:flex;gap:12px;align-items:center;padding:8px 0;border:0;border-bottom:1px solid var(--hair);background:transparent;text-align:left;cursor:pointer;width:100%;color:inherit}
+.cat-item > span{min-width:0;display:grid}
+.cat-item b{font:700 18px var(--f-display);text-transform:uppercase;line-height:1.1}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);padding:10px 16px;font:600 13px var(--f-mono);z-index:20;max-width:calc(100% - 32px)}
 .note{border:2px solid var(--rule);padding:12px 14px;font-size:14px;display:grid;gap:10px}
 .list{display:grid;border-top:2px solid var(--rule)}
@@ -166,16 +197,20 @@ input,select{font-size:16px!important}
     <button role="tab" id="tab-training" aria-selected="true" data-tab="training">Training</button>
     <button role="tab" id="tab-plan" aria-selected="false" data-tab="plan">Plan</button>
     <button role="tab" id="tab-progress" aria-selected="false" data-tab="progress">Fortschritt</button>
+    <button role="tab" id="tab-catalog" aria-selected="false" data-tab="catalog">Übungen</button>
     <div class="runbar" id="runbar" hidden><span>Training läuft</span><b id="runtime" class="num">0:00</b></div>
   </nav>
   <main>
     <section id="view-training" class="stack"></section>
     <section id="view-plan" class="stack" hidden></section>
     <section id="view-progress" class="stack" hidden></section>
+    <section id="view-catalog" class="stack" hidden></section>
   </main>
 </div>
 <div class="toast" id="toast" hidden></div>
+<div class="modal" id="exmodal" hidden></div>
 
+<script src="ex-images.js"></script>
 <script>
 (() => {
 /* ---------- Muscles & exercise library ---------- */
@@ -205,6 +240,21 @@ const LIB = {
  "Beinbeuger liegend":["hamstrings"],"Butterfly Maschine":["brust"],"Assistierte Klimmzüge":["lat","bizeps"],"Assistierte Klimmzüge eng":["lat","bizeps"],
  "Seitheben-Maschine":["schultern"],"Lateral Raises Kabel":["schultern"],"Kabel-Crunches":["bauch"],"Plank":["bauch"]
 };
+/* Exercise catalog: [name, image id (Free Exercise DB, public domain), group, equipment, muscles, alone] */
+const CATALOG = [["Kurzhantel-Bankdrücken","Dumbbell_Bench_Press","Brust","Kurzhantel",["brust","trizeps","schultern"],"1"],["Langhantel-Bankdrücken","Barbell_Bench_Press_-_Medium_Grip","Brust","Langhantel",["brust","trizeps","schultern"],"x"],["Brustpresse","Leverage_Chest_Press","Brust","Maschine",["brust","trizeps"],"1"],["Schrägbank KH","Incline_Dumbbell_Press","Brust","Kurzhantel",["brust","schultern","trizeps"],"1"],["Schrägbank Langhantel","Barbell_Incline_Bench_Press_-_Medium_Grip","Brust","Langhantel",["brust","schultern","trizeps"],"x"],["Schrägbank Multipresse","Smith_Machine_Incline_Bench_Press","Brust","Multipresse",["brust","schultern","trizeps"],"1"],["Schrägbank-Brustpresse Maschine","Leverage_Incline_Chest_Press","Brust","Maschine",["brust","schultern","trizeps"],"1"],["Butterfly Maschine","Butterfly","Brust","Maschine",["brust"],"1"],["Butterfly","Butterfly","Brust","Maschine",["brust"],"1"],["Kabelzug-Flys","Cable_Crossover","Brust","Kabel",["brust"],"1"],["Kabel-Flys","Cable_Crossover","Brust","Kabel",["brust"],"1"],["KH-Flys","Dumbbell_Flyes","Brust","Kurzhantel",["brust"],"1"],["Liegestütze","Pushups","Brust","Körpergewicht",["brust","trizeps"],"1"],["Brustgestütztes Rudern Maschine","Leverage_Iso_Row","Rücken","Maschine",["ruecken_oben","lat","bizeps"],"1"],["Rudermaschine","Leverage_Iso_Row","Rücken","Maschine",["ruecken_oben","lat","bizeps"],"1"],["T-Bar-Rudern","Lying_T-Bar_Row","Rücken","Maschine",["ruecken_oben","lat","bizeps"],"1"],["Kurzhantelrudern einarmig","One-Arm_Dumbbell_Row","Rücken","Kurzhantel",["ruecken_oben","lat","bizeps"],"1"],["Kabelrudern","Seated_Cable_Rows","Rücken","Kabel",["ruecken_oben","lat","bizeps"],"1"],["Langhantelrudern","Bent_Over_Barbell_Row","Rücken","Langhantel",["ruecken_oben","lat","ruecken_unten"],"1"],["Latzug","Wide-Grip_Lat_Pulldown","Rücken","Kabel",["lat","bizeps"],"1"],["Latzug eng","Close-Grip_Front_Lat_Pulldown","Rücken","Kabel",["lat","bizeps"],"1"],["Klimmzüge","Pullups","Rücken","Körpergewicht",["lat","bizeps"],"1"],["Klimmzüge / Assist-Maschine","Band_Assisted_Pull-Up","Rücken","Maschine",["lat","bizeps"],"1"],["Assistierte Klimmzüge","Band_Assisted_Pull-Up","Rücken","Maschine",["lat","bizeps"],"1"],["Assistierte Klimmzüge eng","Band_Assisted_Pull-Up","Rücken","Maschine",["lat","bizeps"],"1"],["Kabel-Pullover","Straight-Arm_Pulldown","Rücken","Kabel",["lat"],"1"],["Face Pulls","Face_Pull","Schultern","Kabel",["schultern","ruecken_oben"],"1"],["Reverse Butterfly","Reverse_Machine_Flyes","Schultern","Maschine",["schultern","ruecken_oben"],"1"],["Shrugs","Dumbbell_Shrug","Rücken","Kurzhantel",["ruecken_oben"],"1"],["Hyperextensions mit Gewicht","Hyperextensions_Back_Extensions","Rücken","Maschine",["ruecken_unten","gesaess","hamstrings"],"1"],["Hyperextensions","Hyperextensions_Back_Extensions","Rücken","Maschine",["ruecken_unten","gesaess"],"1"],["Schulterdrücken Maschine","Machine_Shoulder_Military_Press","Schultern","Maschine",["schultern","trizeps"],"1"],["KH-Schulterdrücken sitzend","Seated_Dumbbell_Press","Schultern","Kurzhantel",["schultern","trizeps"],"1"],["Langhantel-Overhead-Press","Standing_Military_Press","Schultern","Langhantel",["schultern","trizeps"],"x"],["Arnold Press","Arnold_Dumbbell_Press","Schultern","Kurzhantel",["schultern","trizeps"],"1"],["Lateral Raises KH","Side_Lateral_Raise","Schultern","Kurzhantel",["schultern"],"1"],["Lateral Raises Kabel","Cable_Seated_Lateral_Raise","Schultern","Kabel",["schultern"],"1"],["Seitheben am Kabel","Cable_Seated_Lateral_Raise","Schultern","Kabel",["schultern"],"1"],["Seitheben-Maschine","svg_seitheben_maschine","Schultern","Maschine",["schultern"],"1"],["KH-Curls","Dumbbell_Bicep_Curl","Arme","Kurzhantel",["bizeps","unterarme"],"1"],["SZ-Curls","EZ-Bar_Curl","Arme","SZ-Stange",["bizeps","unterarme"],"1"],["Hammer Curls","Hammer_Curls","Arme","Kurzhantel",["bizeps","unterarme"],"1"],["Seil-Curls am Kabel","Cable_Hammer_Curls_-_Rope_Attachment","Arme","Kabel",["bizeps","unterarme"],"1"],["Kabel-Curls","Standing_Biceps_Cable_Curl","Arme","Kabel",["bizeps"],"1"],["Bizeps-Maschine","Machine_Preacher_Curls","Arme","Maschine",["bizeps"],"1"],["Trizepsdrücken Kabel","Triceps_Pushdown_-_Rope_Attachment","Arme","Kabel",["trizeps"],"1"],["Overhead-Trizeps Kabel","Cable_Rope_Overhead_Triceps_Extension","Arme","Kabel",["trizeps"],"1"],["KH-Overhead-Extension","Dumbbell_One-Arm_Triceps_Extension","Arme","Kurzhantel",["trizeps"],"1"],["Trizeps-Maschine","Machine_Triceps_Extension","Arme","Maschine",["trizeps"],"1"],["Dip-Maschine","Dip_Machine","Arme","Maschine",["trizeps","brust"],"1"],["Dips am Barren","Dips_-_Triceps_Version","Arme","Körpergewicht",["trizeps","brust","schultern"],"1"],["Beinpresse","Leg_Press","Beine","Maschine",["quad","gesaess"],"1"],["Beinpresse Füße hoch","Leg_Press","Po","Maschine",["gesaess","quad","hamstrings"],"1"],["Hackenschmidt","Hack_Squat","Beine","Maschine",["quad","gesaess"],"1"],["Multipresse-Kniebeuge","Smith_Machine_Squat","Beine","Multipresse",["quad","gesaess"],"1"],["Langhantel-Kniebeuge","Barbell_Squat","Beine","Langhantel",["quad","gesaess","ruecken_unten"],"x"],["Goblet Squat","Goblet_Squat","Beine","Kurzhantel",["quad","gesaess"],"1"],["Beinstrecker","Leg_Extensions","Beine","Maschine",["quad"],"1"],["Bulgarian Split Squats KH","Split_Squat_with_Dumbbells","Beine","Kurzhantel",["quad","gesaess"],"1"],["Ausfallschritte KH","Dumbbell_Lunges","Beine","Kurzhantel",["quad","gesaess"],"1"],["Rumänisches Kreuzheben KH","Stiff-Legged_Dumbbell_Deadlift","Beine","Kurzhantel",["hamstrings","gesaess","ruecken_unten"],"1"],["Rumänisches Kreuzheben Langhantel","Romanian_Deadlift","Beine","Langhantel",["hamstrings","gesaess","ruecken_unten"],"1"],["Kreuzheben","Barbell_Deadlift","Beine","Langhantel",["ruecken_unten","hamstrings","gesaess"],"1"],["Beinbeuger Maschine","Lying_Leg_Curls","Beine","Maschine",["hamstrings"],"1"],["Beinbeuger liegend","Lying_Leg_Curls","Beine","Maschine",["hamstrings"],"1"],["Beinbeuger sitzend/liegend","Seated_Leg_Curl","Beine","Maschine",["hamstrings"],"1"],["Beinbeuger sitzend","Seated_Leg_Curl","Beine","Maschine",["hamstrings"],"1"],["Wadenheben stehend","Standing_Calf_Raises","Beine","Maschine",["waden"],"1"],["Wadenheben sitzend","Seated_Calf_Raise","Beine","Maschine",["waden"],"1"],["Wadenheben an der Beinpresse","Calf_Press_On_The_Leg_Press_Machine","Beine","Maschine",["waden"],"1"],["Hip Thrust Maschine","Barbell_Hip_Thrust","Po","Maschine",["gesaess","hamstrings"],"1"],["Hip Thrust","Barbell_Hip_Thrust","Po","Langhantel",["gesaess","hamstrings"],"1"],["Glute-Bridge mit KH","Barbell_Glute_Bridge","Po","Kurzhantel",["gesaess","hamstrings"],"1"],["Abduktoren-Maschine","Thigh_Abductor","Po","Maschine",["gesaess"],"1"],["Adduktoren-Maschine","Thigh_Adductor","Beine","Maschine",["quad"],"1"],["Glute Kickback Kabel","One-Legged_Cable_Kickback","Po","Kabel",["gesaess"],"1"],["Seitliches Beinheben am Kabel","svg_kabel_abduktion","Po","Kabel",["gesaess"],"1"],["Hanging Leg Raises","Hanging_Leg_Raise","Bauch","Körpergewicht",["bauch"],"1"],["Beinheben am Dipständer","Knee_Hip_Raise_On_Parallel_Bars","Bauch","Körpergewicht",["bauch"],"1"],["Kabel-Crunches","Cable_Crunch","Bauch","Kabel",["bauch"],"1"],["Bauchmaschine","Ab_Crunch_Machine","Bauch","Maschine",["bauch"],"1"],["Plank","Plank","Bauch","Körpergewicht",["bauch"],"1"],["Russian Twist","Russian_Twist","Bauch","Körpergewicht",["bauch"],"1"],["Dips für die Brust","Dips_-_Chest_Version","Brust","Körpergewicht",["brust","trizeps","schultern"],"1"],["Kabel-Flys von unten","Low_Cable_Crossover","Brust","Kabel",["brust"],"1"],["Schrägbank-Flys KH","Incline_Dumbbell_Flyes","Brust","Kurzhantel",["brust","schultern"],"1"],["Bankdrücken Multipresse","Smith_Machine_Bench_Press","Brust","Multipresse",["brust","trizeps","schultern"],"1"],["Negativ-Bankdrücken KH","Decline_Dumbbell_Bench_Press","Brust","Kurzhantel",["brust","trizeps"],"1"],["Latzug einarmig","One_Arm_Lat_Pulldown","Rücken","Kabel",["lat","bizeps"],"1"],["Überzüge KH","Straight-Arm_Dumbbell_Pullover","Rücken","Kurzhantel",["lat","brust"],"1"],["Klimmzüge Untergriff","Chin-Up","Rücken","Körpergewicht",["lat","bizeps"],"1"],["Hohe Rudermaschine","Leverage_High_Row","Rücken","Maschine",["lat","ruecken_oben","bizeps"],"1"],["Rudern Multipresse","Smith_Machine_Bent_Over_Row","Rücken","Multipresse",["ruecken_oben","lat","bizeps"],"1"],["Kabel-Shrugs","Cable_Shrugs","Rücken","Kabel",["ruecken_oben"],"1"],["Frontheben KH","Front_Dumbbell_Raise","Schultern","Kurzhantel",["schultern"],"1"],["Reverse Flys vorgebeugt KH","Seated_Bent-Over_Rear_Delt_Raise","Schultern","Kurzhantel",["schultern","ruecken_oben"],"1"],["Aufrechtes Rudern Kabel","Upright_Cable_Row","Schultern","Kabel",["schultern","ruecken_oben"],"1"],["Schulterpresse Hebelmaschine","Leverage_Shoulder_Press","Schultern","Maschine",["schultern","trizeps"],"1"],["Konzentrationscurls","Concentration_Curls","Arme","Kurzhantel",["bizeps"],"1"],["Scottcurls SZ","Preacher_Curl","Arme","SZ-Stange",["bizeps"],"1"],["Schrägbank-Curls KH","Incline_Dumbbell_Curl","Arme","Kurzhantel",["bizeps"],"1"],["Reverse Curls","Reverse_Barbell_Curl","Arme","Langhantel",["unterarme","bizeps"],"1"],["Trizepsdrücken Stange","Triceps_Pushdown","Arme","Kabel",["trizeps"],"1"],["Trizeps-Kickbacks KH","Tricep_Dumbbell_Kickback","Arme","Kurzhantel",["trizeps"],"1"],["French Press SZ","EZ-Bar_Skullcrusher","Arme","SZ-Stange",["trizeps"],"x"],["Enges Bankdrücken Multipresse","Smith_Machine_Close-Grip_Bench_Press","Arme","Multipresse",["trizeps","brust"],"1"],["Beinpresse eng","Narrow_Stance_Leg_Press","Beine","Maschine",["quad","gesaess"],"1"],["Rückwärts-Ausfallschritte KH","Dumbbell_Rear_Lunge","Beine","Kurzhantel",["quad","gesaess"],"1"],["Step-ups KH","Dumbbell_Step_Ups","Beine","Kurzhantel",["quad","gesaess"],"1"],["Sumo-Kreuzheben","Sumo_Deadlift","Beine","Langhantel",["gesaess","quad","hamstrings"],"1"],["Wadenheben Multipresse","Smith_Machine_Calf_Raise","Beine","Multipresse",["waden"],"1"],["Hip Thrust Multipresse","Smith_Machine_Hip_Raise","Po","Multipresse",["gesaess","hamstrings"],"1"],["Glute-Bridge einbeinig","Single_Leg_Glute_Bridge","Po","Körpergewicht",["gesaess","hamstrings"],"1"],["Kabel-Pull-Through","Pull_Through","Po","Kabel",["gesaess","hamstrings"],"1"],["Glute Kickback Boden","Glute_Kickback","Po","Körpergewicht",["gesaess"],"1"],["Crunches","Crunches","Bauch","Körpergewicht",["bauch"],"1"],["Reverse Crunch","Reverse_Crunch","Bauch","Körpergewicht",["bauch"],"1"],["Kabel-Holzhacker","Standing_Cable_Wood_Chop","Bauch","Kabel",["bauch"],"1"],["Beinheben liegend","Flat_Bench_Lying_Leg_Raise","Bauch","Körpergewicht",["bauch"],"1"],["Seitstütz","Side_Bridge","Bauch","Körpergewicht",["bauch"],"1"],["Bauchroller","Ab_Roller","Bauch","Körpergewicht",["bauch"],"1"],["Laufband gehen","Walking_Treadmill","Cardio","Laufband",[],"1"],["Laufband joggen","Jogging_Treadmill","Cardio","Laufband",[],"1"],["Crosstrainer","Elliptical_Trainer","Cardio","Crosstrainer",[],"1"],["Fahrrad-Ergometer","Bicycling_Stationary","Cardio","Ergometer",[],"1"],["Liegeergometer","Recumbent_Bike","Cardio","Ergometer",[],"1"],["Rudergerät","Rowing_Stationary","Cardio","Rudergerät",[],"1"],["Stepper","Stairmaster","Cardio","Stepper",[],"1"],["Treppenmaschine","Step_Mill","Cardio","Treppenmaschine",[],"1"],["Draußen laufen","","Cardio","ohne Gerät",[],"1"]];
+const CAT = {};
+CATALOG.forEach(([n,img,g,eq,mg,m]) => { CAT[n] = {n, img, g, eq, mg, m}; if (!LIB[n]) LIB[n] = mg; });
+const exImg = (id,f) => (window.EXIMG && window.EXIMG[id] && window.EXIMG[id][f]) || "";
+const CAT_GROUPS = ["Brust","Rücken","Schultern","Arme","Beine","Po","Bauch","Cardio"];
+const WARM_TYPES = CATALOG.filter(c=>c[2]==="Cardio").map(c=>c[0]);
+const DEFAULT_WARM = {type:"Laufband gehen", min:10};
+const planWarm = p => ({...DEFAULT_WARM, ...((p && p.warmup) || {})});
+function thumb(name, cls=""){
+  const c = CAT[name];
+  if (c && !c.img && c.g==="Cardio") return `<span class="thumb none ${cls}" aria-hidden="true">drau&szlig;en</span>`;
+  if (!c || !c.img) return `<span class="thumb none ${cls}" aria-hidden="true">kein<br>Bild</span>`;
+  return `<button type="button" class="thumb ${cls}" data-show="${esc(name)}" aria-label="Ausführung ansehen: ${esc(name)}"><img src="${exImg(c.img,0)}" alt="" loading="lazy"></button>`;
+}
 const musclesFor = (name, fb) => LIB[name] || fb || [];
 
 /* ---------- Templates ---------- */
@@ -280,7 +330,7 @@ function suggestion(ex, last){
 }
 function newDraft(dayId){
   const day = S.plan?.days.find(d=>d.id===dayId); if (!day) return null;
-  return {dayId, date: ymd(new Date()), warmup:false, ex: day.ex.map(ex => buildEx(ex,0))};
+  return {dayId, date: ymd(new Date()), warmup:{...planWarm(S.plan), done:false}, ex: day.ex.map(ex => buildEx(ex,0))};
 }
 function buildEx(ex, variant){
   const opt = optsOf(ex)[variant] || optsOf(ex)[0];
@@ -303,18 +353,23 @@ function renderTraining(){
   if (!S.plan || !S.plan.days?.length || S.choosing){ v.innerHTML = templatePicker(); return; }
   if (!draftValid()){ S.draft = newDraft(S.draft && S.plan.days.some(d=>d.id===S.draft.dayId) ? S.draft.dayId : defaultDay()); saveDraft(); }
   const d = S.draft, day = S.plan.days.find(x=>x.id===d.dayId);
+  if (!d.warmup || typeof d.warmup!=="object") d.warmup = {...planWarm(S.plan), done:!!d.warmup};
   const w = planWeek(S.plan, parseYmd(d.date));
   let h = resultBlock() + switchBlock() + `<div class="daypick" role="group" aria-label="Einheit wählen">` +
     S.plan.days.map(p => `<button type="button" data-day="${esc(p.id)}" aria-pressed="${p.id===d.dayId}"><b>${esc(p.label||"Tag")}</b><span>${esc(p.day||"–")} · ${p.ex.length} Übungen</span></button>`).join("") + `</div>`;
   h += `<div class="row" style="flex-wrap:nowrap"><label class="label" for="sdate">Datum</label><input type="date" id="sdate" value="${esc(d.date)}" style="max-width:180px">` +
        (w>0 && w<=(S.plan.weeks||99) ? `<span class="muted" style="font-size:13px">Woche ${w}/${S.plan.weeks}${phaseText(S.plan,w)?" · "+esc(phaseText(S.plan,w)):""}</span>` : "") + `</div>`;
-  h += `<label class="warm" for="warm"><input type="checkbox" id="warm" ${d.warmup?"checked":""}><span><b>10 Min Laufband</b> <span class="muted">· zum Start</span></span></label>`;
+  const wu = d.warmup;
+  h += `<article class="ex"><div class="ex-head"><div class="titlewrap">${thumb(wu.type)}<div><h3>${esc(wu.type)}</h3><span class="label">Aufwärmen · ${esc(wu.min)} Min</span></div></div>
+      <button type="button" class="chk wchk" id="warm-done" aria-pressed="${!!wu.done}" aria-label="Aufwärmen erledigt">✓</button></div>
+    <div class="ex-body"><div class="g-warm"><label class="label" for="warm-type">Gerät</label><select id="warm-type">${WARM_TYPES.map(t=>`<option ${t===wu.type?"selected":""}>${esc(t)}</option>`).join("")}</select>
+      <label class="label" for="warm-min">Minuten</label><input type="number" id="warm-min" inputmode="numeric" min="1" max="60" value="${esc(wu.min)}"></div></div></article>`;
   d.ex.forEach((e,ei) => {
     const ex = day.ex[ei], opts = optsOf(ex), opt = opts[e.variant] || opts[0];
     const last = lastFor(e.name), sug = suggestion(ex,last);
     const mg = musclesFor(e.name, ex.mg);
     h += `<article class="ex">
-      <div class="ex-head"><div><h3>${esc(e.name)}</h3><span class="label">${mg.map(m=>esc(MUSCLES[m]||m)).join(" · ")||"Muskel nicht gesetzt"}</span></div><span class="mark ${opt.m==="x"?"x":""}" title="${opt.m==="x"?"mit Partner/Spotter":"alleine machbar"}">(${opt.m==="x"?"x":"1"})</span></div>
+      <div class="ex-head"><div class="titlewrap">${thumb(e.name)}<div><h3>${esc(e.name)}</h3><span class="label">${mg.map(m=>esc(MUSCLES[m]||m)).join(" · ")||"Muskel nicht gesetzt"}</span></div></div><span class="mark ${opt.m==="x"?"x":""}" title="${opt.m==="x"?"mit Partner/Spotter":"alleine machbar"}">(${opt.m==="x"?"x":"1"})</span></div>
       <div class="ex-body">
       <div class="meta"><span>Ziel ${ex.s} × ${ex.r[0]===ex.r[1]?ex.r[0]:ex.r[0]+"–"+ex.r[1]}</span>
         ${last ? `<span>Zuletzt ${fmtDate(last.date)}: <span class="num">${last.sets.map(x=>(x.kg?fmtKg(x.kg)+"×":"")+x.reps).join(" · ")}</span></span>` : `<span>Noch keine Daten</span>`}
@@ -359,7 +414,7 @@ function historyBlock(){
   if (!list.length) return `<div class="stack" style="gap:8px;margin-top:10px"><h2 style="font-size:24px">Letzte Einheiten</h2><div class="empty">Deine gespeicherten Einheiten erscheinen hier.</div></div>`;
   return `<div style="margin-top:10px"><h2 style="font-size:24px;margin-bottom:8px">Letzte Einheiten</h2><div class="list">` + list.map(s => `
     <div class="li"><div><b>${esc(s.dayLabel||"Einheit")}</b> <span class="muted num">${fmtDate(s.date)}</span><br>
-      <span class="muted num" style="font-size:12px">${(s.exercises||[]).reduce((a,e)=>a+e.sets.length,0)} Sätze · ${fmtKg(s.volume||0)} kg${s.durationMin?" · "+s.durationMin+" Min":""}${s.warmup?" · Laufband ✓":""}</span>${s.prs&&s.prs.length?` <span class="pr">${s.prs.length} PR</span>`:""}</div>
+      <span class="muted num" style="font-size:12px">${(s.exercises||[]).reduce((a,e)=>a+e.sets.length,0)} Sätze · ${fmtKg(s.volume||0)} kg${s.durationMin?" · "+s.durationMin+" Min":""}${s.warmup?" · "+esc(s.warmupType||"Laufband")+(s.warmupMin?" "+s.warmupMin+" Min":"")+" ✓":""}</span>${s.prs&&s.prs.length?` <span class="pr">${s.prs.length} PR</span>`:""}</div>
       <button type="button" class="btn small ${S.confirmDel===s.id?"primary":""}" data-del="${esc(s.id)}">${S.confirmDel===s.id?"Wirklich löschen":"Löschen"}</button></div>`).join("") + `</div></div>`;
 }
 
@@ -378,7 +433,11 @@ function renderPlan(){
       <label class="label" style="display:grid;gap:2px">Start (Montag)<input type="date" id="pe-start" value="${esc(p.start||"")}"></label>
       <label class="label" style="display:grid;gap:2px">Wochen<input type="number" id="pe-weeks" min="1" max="52" value="${esc(p.weeks||12)}"></label>
     </div>
-    <p class="muted" style="margin:0;font-size:13px">Übungsnamen aus der Liste setzen die Muskelgruppen automatisch. Alternativen mit Komma trennen, „(x)“ dahinter = braucht Partner/Spotter.</p>`;
+    <section class="note"><b style="font:700 20px var(--f-display);text-transform:uppercase">Aufwärmen (Standard)</b>
+      <div class="g-warm"><label class="label" for="pe-warm-type">Gerät</label><select id="pe-warm-type">${WARM_TYPES.map(t=>`<option ${t===planWarm(p).type?"selected":""}>${esc(t)}</option>`).join("")}</select>
+      <label class="label" for="pe-warm-min">Minuten</label><input type="number" id="pe-warm-min" inputmode="numeric" min="1" max="60" value="${esc(planWarm(p).min)}"></div>
+      <span class="muted" style="font-size:12px">Im Training kannst du Gerät und Dauer für den Tag noch ändern.</span></section>
+    <p class="muted" style="margin:0;font-size:13px">Tippe auf „Katalog“, um eine Übung oder Alternative mit Bild auszuwählen. Eigene Namen kannst du auch direkt eintippen.</p>`;
   p.days.forEach((d,di) => {
     h += `<section class="pday"><header>
       <label class="label" style="display:grid;gap:2px">Tag<input type="text" data-pd="${di}.label" id="pd-${di}-l" value="${esc(d.label)}" maxlength="30"></label>
@@ -387,7 +446,7 @@ function renderPlan(){
     d.ex.forEach((x,xi) => {
       const k = `${di}.${xi}`;
       h += `<div class="pex">
-        <label>Übung<input type="text" list="lib" data-px="${k}.n" id="px-${di}-${xi}-n" value="${esc(x.n)}" placeholder="Name der Übung"></label>
+        <div class="pick-row">${x.n?thumb(x.n,"sm"):`<span class="thumb sm none" aria-hidden="true">?</span>`}<label>Übung<input type="text" list="lib" data-px="${k}.n" id="px-${di}-${xi}-n" value="${esc(x.n)}" placeholder="Name der Übung"></label><button type="button" class="btn small" data-pickex="${k}">Katalog</button></div>
         <div class="g5">
           <label>Sätze<input type="number" min="1" max="10" data-px="${k}.s" id="px-${di}-${xi}-s" value="${esc(x.s)}"></label>
           <label>Wdh. von<input type="number" min="1" max="50" data-px="${k}.r0" id="px-${di}-${xi}-r0" value="${esc(x.r[0])}"></label>
@@ -399,7 +458,7 @@ function renderPlan(){
           <label>Muskel<select data-px="${k}.mg0" id="px-${di}-${xi}-mg0">${mOpts(x.mg?.[0],true)}</select></label>
           <label>Mit beteiligt<select data-px="${k}.mg1" id="px-${di}-${xi}-mg1">${mOpts(x.mg?.[1],true)}</select></label>
         </div>
-        <label>Alternativen<input type="text" data-px="${k}.alt" id="px-${di}-${xi}-alt" value="${esc((x.alt||[]).map(a=>a.n+(a.m==="x"?" (x)":"")).join(", "))}" placeholder="z. B. Brustpresse, Langhantel-Bankdrücken (x)"></label>
+        <div class="pick-row"><label>Alternativen<input type="text" data-px="${k}.alt" id="px-${di}-${xi}-alt" value="${esc((x.alt||[]).map(a=>a.n+(a.m==="x"?" (x)":"")).join(", "))}" placeholder="z. B. Brustpresse, Langhantel-Bankdrücken (x)"></label><button type="button" class="btn small" data-pickalt="${k}">+ Katalog</button></div>
         <div class="row"><button type="button" class="btn small" data-mv="${k}.-1" ${xi===0?"disabled":""} aria-label="nach oben">↑</button><button type="button" class="btn small" data-mv="${k}.1" ${xi===d.ex.length-1?"disabled":""} aria-label="nach unten">↓</button><button type="button" class="btn small ghost" data-rmex="${k}">Übung entfernen</button></div>
       </div>`;
     });
@@ -567,12 +626,98 @@ function lineChart(pts, unit){
   </svg>`;
 }
 
+/* ---------- Exercise catalog ---------- */
+function renderCatalog(){
+  const v = $("#view-catalog");
+  const g = S.catGroup || "Alle", q = (S.catQuery||"").toLowerCase();
+  const seen = new Set();
+  const inPlan = new Set((S.plan?.days||[]).flatMap(d=>d.ex.flatMap(x=>[x.n,...(x.alt||[]).map(a=>a.n)])));
+  const items = CATALOG.map(c=>CAT[c[0]]).filter(c => {
+    if (g!=="Alle" && c.g!==g) return false;
+    if (q && !c.n.toLowerCase().includes(q) && !c.mg.some(m=>(MUSCLES[m]||"").toLowerCase().includes(q))) return false;
+    const key = c.img ? c.img+"|"+c.g : c.n;
+    if (seen.has(key) && !inPlan.has(c.n)) return false;
+    seen.add(key); return true;
+  });
+  let h = `<h2 style="font-size:28px">Übungskatalog</h2>
+    <p class="muted" style="margin:0;font-size:14px">Bild antippen für die Ausführung. Die Bilder zeigen Start- und Endposition im Wechsel.</p>
+    <input type="text" id="cat-q" placeholder="Suchen, z. B. Rudern oder Brust" value="${esc(S.catQuery||"")}">
+    <div class="cat-filter" role="group" aria-label="Muskelgruppe">${["Alle",...CAT_GROUPS].map(x=>`<button type="button" data-catg="${x}" aria-pressed="${x===g}">${x}</button>`).join("")}</div>
+    <div class="cat-list">` + (items.length ? items.map(c => `<button type="button" class="cat-item" data-show="${esc(c.n)}">
+      ${c.img?`<span class="thumb" aria-hidden="true"><img src="${exImg(c.img,0)}" alt="" loading="lazy"></span>`:`<span class="thumb none" aria-hidden="true">kein<br>Bild</span>`}
+      <span><b>${esc(c.n)}</b><span class="muted" style="font-size:12px">${esc(c.eq)} · ${c.mg.map(m=>esc(MUSCLES[m]||m)).join(", ")}</span></span>
+      <span class="mark ${c.m==="x"?"x":""}" style="margin-left:auto">(${c.m})</span>${inPlan.has(c.n)?`<span class="pr">Plan</span>`:""}</button>`).join("") : `<div class="empty">Keine Übung gefunden.</div>`) + `</div>
+    <p class="muted" style="font-size:12px;margin:0">Bilder: Free Exercise DB (github.com/yuhonas/free-exercise-db), gemeinfrei. Die Bilder zeigen teils eine ähnliche Variante, z. B. Hip Thrust mit Langhantel statt Maschine. Seitheben-Maschine und Seitliches Beinheben am Kabel sind eigene schematische Zeichnungen.</p>`;
+  v.innerHTML = h;
+}
+let modalTimer = null;
+function openModal(name){
+  const c = CAT[name] || {n:name, img:"", eq:"", mg:LIB[name]||[], m:"1"};
+  const m = $("#exmodal");
+  m.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(c.n)}">
+    ${c.img?`<div class="frame"><img id="mframe" src="${exImg(c.img,0)}" alt="Ausführung ${esc(c.n)}"><span class="step" id="mstep">Start</span></div>`:""}
+    <div class="info"><h2>${esc(c.n)}</h2>
+      <span class="label">${c.mg.map(x=>esc(MUSCLES[x]||x)).join(" · ")}</span>
+      <span style="font-size:14px">${c.g==="Cardio"?"Aufwärmen / Cardio"+(c.eq?" · "+esc(c.eq):""):(c.eq?esc(c.eq)+" · ":"")+(c.m==="x"?"(x) besser mit Partner/Spotter":"(1) alleine machbar")}</span>
+      ${S.notes[c.n]?`<span class="detail">Notiz: ${esc(S.notes[c.n])}</span>`:""}
+      ${!c.img?`<span class="muted" style="font-size:13px">${c.g==="Cardio"?"Ohne Gerät, daher kein Bild.":"Für diese Übung gibt es noch kein Bild."}</span>`:""}
+      ${c.img&&c.img.startsWith("svg_")?`<span class="muted" style="font-size:12px">Schematische Zeichnung, kein Foto.</span>`:""}
+      <button type="button" class="btn primary" id="modal-close">Schließen</button></div></div>`;
+  m.hidden = false;
+  clearInterval(modalTimer);
+  if (c.img){ let f=0; modalTimer = setInterval(()=>{ f=1-f; const im=$("#mframe"), st=$("#mstep"); if (!im){ clearInterval(modalTimer); return; } im.src=exImg(c.img,f); st.textContent = f ? "Ende" : "Start"; }, 1100); }
+  try{ history.pushState({modal:1}, ""); }catch(e){}
+}
+function closeModal(fromHistory){
+  const m=$("#exmodal"); if (m.hidden) return;
+  m.hidden = true; m.innerHTML = ""; clearInterval(modalTimer); S.pick = null;
+  if (!fromHistory){ try{ if (history.state && history.state.modal) history.back(); }catch(e){} }
+}
+window.addEventListener("popstate", () => closeModal(true));
+document.addEventListener("keydown", ev => { if (ev.key==="Escape") closeModal(false); });
+
+/* ---------- Catalog picker for the plan editor ---------- */
+function openPicker(ctx){
+  const x = S.pe.days[ctx.di].ex[ctx.xi];
+  S.pick = ctx; S.pickQ = "";
+  S.pickG = ctx.mode==="alt" && CAT[x.n] ? CAT[x.n].g : "Alle";
+  const m = $("#exmodal");
+  m.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="Übung wählen"><div class="picker">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h2>${ctx.mode==="alt"?"Alternative wählen":"Übung wählen"}</h2><button type="button" class="btn small" id="modal-close">Schließen</button></div>
+    ${ctx.mode==="alt"&&x.n?`<span class="muted" style="font-size:13px">für ${esc(x.n)}</span>`:""}
+    <input type="text" id="pick-q" placeholder="Suchen, z. B. Rudern oder Brust">
+    <div class="cat-filter" id="pick-groups"></div>
+    <div class="cat-list" id="pick-list"></div></div></div>`;
+  m.hidden = false; clearInterval(modalTimer);
+  renderPickerList();
+  try{ history.pushState({modal:1}, ""); }catch(e){}
+}
+function renderPickerList(){
+  const g = S.pickG || "Alle", q = (S.pickQ||"").toLowerCase();
+  const x = S.pe.days[S.pick.di].ex[S.pick.xi];
+  const taken = new Set([x.n, ...(x.alt||[]).map(a=>a.n)]);
+  $("#pick-groups").innerHTML = ["Alle",...CAT_GROUPS.filter(c=>c!=="Cardio")].map(c=>`<button type="button" data-pickg="${c}" aria-pressed="${c===g}">${c}</button>`).join("");
+  const items = CATALOG.map(c=>CAT[c[0]]).filter(c => c.g!=="Cardio" && (g==="Alle"||c.g===g) &&
+    (!q || c.n.toLowerCase().includes(q) || c.mg.some(m=>(MUSCLES[m]||"").toLowerCase().includes(q))));
+  $("#pick-list").innerHTML = items.length ? items.map(c => `<button type="button" class="cat-item" data-pick="${esc(c.n)}" ${taken.has(c.n)?"disabled style=\"opacity:.45\"":""}>
+      ${c.img?`<span class="thumb" aria-hidden="true"><img src="${exImg(c.img,0)}" alt=""></span>`:`<span class="thumb none" aria-hidden="true">kein<br>Bild</span>`}
+      <span><b>${esc(c.n)}</b><span class="muted" style="font-size:12px">${esc(c.eq)} · ${c.mg.map(m=>esc(MUSCLES[m]||m)).join(", ")}</span></span>
+      <span class="mark ${c.m==="x"?"x":""}" style="margin-left:auto">(${c.m})</span></button>`).join("") : `<div class="empty">Keine Übung gefunden.</div>`;
+}
+function applyPick(name){
+  const c = CAT[name], ctx = S.pick; if (!c || !ctx) return;
+  const x = S.pe.days[ctx.di].ex[ctx.xi];
+  if (ctx.mode==="alt"){ x.alt = x.alt||[]; if (!x.alt.some(a=>a.n===name) && x.alt.length<4) x.alt.push({n:name, m:c.m}); else if (x.alt.length>=4) toast("Maximal 4 Alternativen"); }
+  else { x.n = name; x.mg = c.mg.slice(0,3); x.m = c.m; }
+  S.peDirty = true; closeModal(false); render();
+}
+
 /* ---------- Render ---------- */
 function render(){
-  for (const t of ["training","plan","progress"]){ $("#view-"+t).hidden = S.tab!==t; $("#tab-"+t).setAttribute("aria-selected", S.tab===t); }
+  for (const t of ["training","plan","progress","catalog"]){ $("#view-"+t).hidden = S.tab!==t; $("#tab-"+t).setAttribute("aria-selected", S.tab===t); }
   const w = planWeek(S.plan);
   $("#weekline").textContent = !S.plan ? "Trainingslog" : !w ? (S.plan.name||"") : w<1 ? `Start ${fmtDate(S.plan.start)}` : w>(S.plan.weeks||12) ? `${S.plan.name} · abgeschlossen` : `Woche ${w}/${S.plan.weeks}`;
-  if (S.tab==="training") renderTraining(); else if (S.tab==="plan") renderPlan(); else renderProgress();
+  if (S.tab==="training") renderTraining(); else if (S.tab==="plan") renderPlan(); else if (S.tab==="catalog") renderCatalog(); else renderProgress();
 }
 let rT, pending=false;
 const typing = () => { const a=document.activeElement; return a && a.matches && a.matches("main input, main select"); };
@@ -581,6 +726,13 @@ document.addEventListener("focusout", () => { if (pending) setTimeout(()=>{ if (
 
 /* ---------- Events ---------- */
 document.addEventListener("click", async ev => {
+  const pk = ev.target.closest("[data-pick]"); if (pk){ applyPick(pk.dataset.pick); return; }
+  const pg = ev.target.closest("[data-pickg]"); if (pg){ S.pickG = pg.dataset.pickg; renderPickerList(); return; }
+  const pe1 = ev.target.closest("[data-pickex],[data-pickalt]"); if (pe1){ const [di,xi] = (pe1.dataset.pickex||pe1.dataset.pickalt).split(".").map(Number); openPicker({di, xi, mode: pe1.dataset.pickex ? "ex" : "alt"}); return; }
+  if (ev.target.closest("#warm-done")){ const wu=S.draft.warmup; wu.done=!wu.done; if (wu.done) startClock(); saveDraft(); render(); return; }
+  const sh = ev.target.closest("[data-show]"); if (sh){ openModal(sh.dataset.show); return; }
+  if (ev.target.id==="exmodal" || ev.target.id==="modal-close"){ closeModal(false); return; }
+  const cg = ev.target.closest("[data-catg]"); if (cg){ S.catGroup = cg.dataset.catg; render(); return; }
   const pm = ev.target.closest("[data-m]"); if (pm){ S.selM = S.selM===pm.dataset.m?null:pm.dataset.m; render(); return; }
   const b = ev.target.closest("button"); if (!b) return;
   const ds = b.dataset;
@@ -602,7 +754,7 @@ document.addEventListener("click", async ev => {
   if (ds.metric){ S.metric=ds.metric; store.set("satzbuch-metric",S.metric); render(); return; }
   if (ds.rk){ S.selM = S.selM===ds.rk?null:ds.rk; render(); return; }
   // plan editor
-  if (ds.addex){ S.pe.days[+ds.addex].ex.push({id:uid6(),n:"",s:3,r:[8,12],st:2.5,m:"1",mg:[],alt:[]}); S.peDirty=true; render(); return; }
+  if (ds.addex){ const dd=S.pe.days[+ds.addex]; dd.ex.push({id:uid6(),n:"",s:3,r:[8,12],st:2.5,m:"1",mg:[],alt:[]}); S.peDirty=true; render(); openPicker({di:+ds.addex, xi:dd.ex.length-1, mode:"ex"}); return; }
   if (ds.rmex){ const [di,xi]=ds.rmex.split(".").map(Number); S.pe.days[di].ex.splice(xi,1); S.peDirty=true; render(); return; }
   if (ds.mv){ const [di,xi,dir]=ds.mv.split(".").map(Number); const a=S.pe.days[di].ex; const j=xi+dir; if(j<0||j>=a.length) return; [a[xi],a[j]]=[a[j],a[xi]]; S.peDirty=true; render(); return; }
   if (ds.delday!==undefined){ const di=+ds.delday; if (S.confirmDay!==di){ S.confirmDay=di; render(); return; } S.confirmDay=null; S.pe.days.splice(di,1); S.peDirty=true; render(); return; }
@@ -620,6 +772,10 @@ document.addEventListener("keydown", ev => { if ((ev.key==="Enter"||ev.key===" "
 document.addEventListener("input", ev => {
   const t = ev.target;
   if (t.dataset.f){ S.draft.ex[+t.dataset.ex].sets[+t.dataset.set][t.dataset.f]=t.value; if (t.value) startClock(); saveDraft(); }
+  else if (t.id==="cat-q"){ S.catQuery=t.value; clearTimeout(S.catT); S.catT=setTimeout(()=>{ const pos=t.selectionStart; renderCatalog(); const n=$("#cat-q"); if(n){ n.focus(); try{ n.setSelectionRange(pos,pos); }catch(e){} } },150); }
+  else if (t.id==="pick-q"){ S.pickQ=t.value; renderPickerList(); }
+  else if (t.id==="warm-min"){ S.draft.warmup.min = Math.max(1, Math.min(60, parseInt(t.value)||1)); saveDraft(); }
+  else if (t.id==="pe-warm-min"){ S.pe.warmup = {...planWarm(S.pe), min: Math.max(1, Math.min(60, parseInt(t.value)||10))}; S.peDirty=true; markDirty(); }
   else if (t.id==="warm"){ S.draft.warmup=t.checked; if (t.checked) startClock(); saveDraft(); }
   else if (t.dataset.note!==undefined){ const v=t.value.trim(); if (v) S.notes[t.dataset.note]=v; else delete S.notes[t.dataset.note]; clearTimeout(S.noteT); S.noteT=setTimeout(()=>persist("notes"),400); }
   else if (t.id==="sdate"){ S.draft.date=t.value||ymd(new Date()); saveDraft(); }
@@ -638,6 +794,8 @@ document.addEventListener("change", ev => {
   else if (t.dataset.px && /\.(mg0|mg1|m)$/.test(t.dataset.px)) render();
   else if (t.id==="sdate") render();
   else if (t.id==="importfile" && t.files?.[0]) readImport(t.files[0]);
+  else if (t.id==="warm-type"){ S.draft.warmup.type = t.value; saveDraft(); render(); }
+  else if (t.id==="pe-warm-type"){ S.pe.warmup = {...planWarm(S.pe), type:t.value}; S.peDirty=true; render(); }
 });
 
 /* ---------- Local storage (everything stays on this phone) ---------- */
@@ -652,7 +810,7 @@ function persist(what){
   }catch(e){ toast("Speichern fehlgeschlagen: Speicher voll oder gesperrt. Bitte ein Backup exportieren."); return false; }
 }
 function planClean(p){
-  return {name:(p.name||"Mein Plan").slice(0,40), start:p.start||"", weeks:p.weeks||12, updatedAt:Date.now(),
+  return {name:(p.name||"Mein Plan").slice(0,40), start:p.start||"", weeks:p.weeks||12, warmup:planWarm(p), updatedAt:Date.now(),
     days:p.days.map(d=>({id:d.id,label:(d.label||"Tag").slice(0,30),day:(d.day||"").slice(0,12),
       ex:d.ex.filter(x=>x.n.trim()).map(x=>({id:x.id,n:x.n.trim().slice(0,60),s:x.s||3,r:[Math.min(x.r[0],x.r[1]),Math.max(x.r[0],x.r[1])],st:x.st||0,m:x.m==="x"?"x":"1",mg:(x.mg||[]).filter(Boolean).slice(0,3),alt:(x.alt||[]).slice(0,4)}))}))};
 }
@@ -678,7 +836,7 @@ function saveSession(){
   const all = S.sessions[S.uid]||[];
   const prs = findPRs(exercises, all);
   const durationMin = d.startedAt ? Math.max(1, Math.round((Date.now()-d.startedAt)/60000)) : null;
-  S.sessions[S.uid] = [{id:uid6(), date:d.date, dayId:d.dayId, dayLabel:day.label, warmup:!!d.warmup, exercises, volume:Math.round(volume(exercises)), durationMin, prs:prs.map(p=>p.name), createdAt:Date.now()}, ...all];
+  S.sessions[S.uid] = [{id:uid6(), date:d.date, dayId:d.dayId, dayLabel:day.label, warmup:!!(d.warmup&&d.warmup.done), warmupType:d.warmup&&d.warmup.done?d.warmup.type:null, warmupMin:d.warmup&&d.warmup.done?(parseInt(d.warmup.min)||null):null, exercises, volume:Math.round(volume(exercises)), durationMin, prs:prs.map(p=>p.name), createdAt:Date.now()}, ...all];
   if (!persist("sessions")){ S.sessions[S.uid]=all; return; }
   S.lastResult = {label:day.label, durationMin, sets:exercises.reduce((a,e)=>a+e.sets.length,0), volume:Math.round(volume(exercises)), prs};
   S.draft=null; store.del("satzbuch-draft2"); updateClock(); toast(prs.length?(prs.length===1?"Neuer Bestwert!":prs.length+" neue Bestwerte!"):"Einheit gespeichert"); render(); window.scrollTo(0,0);
