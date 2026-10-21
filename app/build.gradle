@@ -12,18 +12,18 @@ android {
         applicationId 'de.klaypex.satzbuch'
         minSdk 29
         targetSdk 34
-        versionCode runNumber
-        versionName "1.0.${runNumber}"
+        // +100 so builds from the fresh repo count as newer than the old ones (update keeps your data)
+        versionCode runNumber + 100
+        versionName "1.1.${runNumber}"
     }
 
-    // Signing key comes from GitHub secrets (KEYSTORE_BASE64, KEYSTORE_PASSWORD) – never stored in the repo.
-    // Always the same key, so every new build installs as an update over the old one (your data stays).
+    // Fixed key so every new build installs as an update over the old one (your data stays).
     signingConfigs {
         release {
-            storeFile file('release.keystore')
-            storePassword System.getenv('KEYSTORE_PASSWORD')
+            storeFile file('satzbuch.keystore')
+            storePassword 'satzbuch'
             keyAlias 'satzbuch'
-            keyPassword System.getenv('KEYSTORE_PASSWORD')
+            keyPassword 'satzbuch'
         }
     }
 
