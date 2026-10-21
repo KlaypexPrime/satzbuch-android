@@ -12,8 +12,10 @@ liegt danach unter **Releases** (neueste Version oben).
 3. Updates genauso installieren – sie ersetzen die alte Version, die Daten bleiben erhalten.
 
 ## Wichtig
-- `app/satzbuch.keystore` nicht löschen oder ändern: Mit einem anderen Schlüssel lässt sich ein Update
-  nicht über die alte Version installieren (dann müsste man deinstallieren und verliert die Daten).
+- Der Signaturschlüssel liegt NICHT im Repo, sondern als GitHub-Secrets (`KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`).
+  Den Schlüssel sicher aufbewahren: Mit einem anderen Schlüssel lässt sich ein Update nicht über die alte
+  Version installieren.
+- Wer das Repo forkt, muss eigene Secrets mit eigenem Schlüssel anlegen.
 - Backups: in der App unter „Plan“ → „Backup exportieren“ (landet im Download-Ordner).
 
 ## Inhalt ändern

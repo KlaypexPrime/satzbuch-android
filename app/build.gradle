@@ -16,13 +16,14 @@ android {
         versionName "1.0.${runNumber}"
     }
 
-    // Fixed key so every new build installs as an update over the old one (your data stays).
+    // Signing key comes from GitHub secrets (KEYSTORE_BASE64, KEYSTORE_PASSWORD) – never stored in the repo.
+    // Always the same key, so every new build installs as an update over the old one (your data stays).
     signingConfigs {
         release {
-            storeFile file('satzbuch.keystore')
-            storePassword 'satzbuch'
+            storeFile file('release.keystore')
+            storePassword System.getenv('KEYSTORE_PASSWORD')
             keyAlias 'satzbuch'
-            keyPassword 'satzbuch'
+            keyPassword System.getenv('KEYSTORE_PASSWORD')
         }
     }
 
