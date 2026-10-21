@@ -79,6 +79,13 @@ select,input[type=text],input[type=number],input[type=date]{background:var(--pap
 .set .chk[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 .set-head{font:600 10px var(--f-mono);text-transform:uppercase;letter-spacing:.1em;color:var(--mid)}
 .savebar{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;border-top:2px solid var(--rule);padding-top:12px}
+.runbar{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--ink);color:var(--paper);padding:6px 12px;font:600 13px var(--f-mono);text-transform:uppercase;letter-spacing:.06em}
+.runbar b{font:800 20px var(--f-display);letter-spacing:.04em}
+.exnote{display:flex;gap:8px;align-items:center}
+.exnote input{font-size:14px!important;padding:6px 8px;border-style:dashed}
+.prbox{border:3px solid var(--rule);padding:12px 14px;display:grid;gap:6px}
+.prbox h2{font-size:24px}
+.prbox li{font-size:14px}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);padding:10px 16px;font:600 13px var(--f-mono);z-index:20;max-width:calc(100% - 32px)}
 .note{border:2px solid var(--rule);padding:12px 14px;font-size:14px;display:grid;gap:10px}
 .list{display:grid;border-top:2px solid var(--rule)}
@@ -159,6 +166,7 @@ input,select{font-size:16px!important}
     <button role="tab" id="tab-training" aria-selected="true" data-tab="training">Training</button>
     <button role="tab" id="tab-plan" aria-selected="false" data-tab="plan">Plan</button>
     <button role="tab" id="tab-progress" aria-selected="false" data-tab="progress">Fortschritt</button>
+    <div class="runbar" id="runbar" hidden><span>Training läuft</span><b id="runtime" class="num">0:00</b></div>
   </nav>
   <main>
     <section id="view-training" class="stack"></section>
@@ -191,7 +199,11 @@ const LIB = {
  "Kreuzheben":["ruecken_unten","hamstrings","gesaess"],"Beinbeuger Maschine":["hamstrings"],"Beinbeuger sitzend/liegend":["hamstrings"],
  "Hip Thrust":["gesaess","hamstrings"],"Abduktoren-Maschine":["gesaess"],"Hyperextensions":["ruecken_unten","gesaess"],
  "Wadenheben stehend":["waden"],"Wadenheben sitzend":["waden"],
- "Hanging Leg Raises":["bauch"],"Kabel-Crunches":["bauch"],"Plank":["bauch"]
+ "Hanging Leg Raises":["bauch"],"Bauchmaschine":["bauch"],"Beinheben am Dipständer":["bauch"],
+ "Hip Thrust Maschine":["gesaess","hamstrings"],"Glute-Bridge mit KH":["gesaess","hamstrings"],"Beinpresse Füße hoch":["gesaess","quad","hamstrings"],
+ "Seitliches Beinheben am Kabel":["gesaess"],"Hyperextensions mit Gewicht":["ruecken_unten","gesaess","hamstrings"],"Wadenheben an der Beinpresse":["waden"],
+ "Beinbeuger liegend":["hamstrings"],"Butterfly Maschine":["brust"],"Assistierte Klimmzüge":["lat","bizeps"],"Assistierte Klimmzüge eng":["lat","bizeps"],
+ "Seitheben-Maschine":["schultern"],"Lateral Raises Kabel":["schultern"],"Kabel-Crunches":["bauch"],"Plank":["bauch"]
 };
 const musclesFor = (name, fb) => LIB[name] || fb || [];
 
@@ -199,7 +211,12 @@ const musclesFor = (name, fb) => LIB[name] || fb || [];
 let _id = 0; const uid6 = () => Date.now().toString(36).slice(-5) + (_id++).toString(36) + Math.random().toString(36).slice(2,5);
 const E = (n,s,r1,r2,st,alt=[]) => ({id:uid6(), n, s, r:[r1,r2], st, m:"1", mg:musclesFor(n), alt:alt.map(([an,am])=>({n:an,m:am}))});
 const TEMPLATES = {
-  split4:{name:"OK/UK-Split 4×", weeks:12, start:"2026-10-26", days:[
+  okuk_po:{name:"OK/UK 4× · Po-Fokus", weeks:12, start:"2026-10-26", days:[
+    {id:"OA",label:"Oberkörper A",day:"Di",ex:[E("Kurzhantel-Bankdrücken",3,6,10,2,[["Brustpresse","1"],["Langhantel-Bankdrücken","x"]]),E("Brustgestütztes Rudern Maschine",3,8,12,2.5,[["Kurzhantelrudern einarmig","1"]]),E("Schulterdrücken Maschine",3,8,12,2.5,[["KH-Schulterdrücken sitzend","1"]]),E("Latzug",3,8,12,2.5,[["Assistierte Klimmzüge","1"]]),E("Lateral Raises Kabel",3,12,20,1.25,[["Lateral Raises KH","1"],["Seitheben-Maschine","1"]]),E("Trizepsdrücken Kabel",2,10,15,2.5,[["Dip-Maschine","1"]]),E("KH-Curls",2,10,15,1,[["SZ-Curls","1"]])]},
+    {id:"UA",label:"Unterkörper A",day:"Do",ex:[E("Beinpresse",3,8,12,5,[["Hackenschmidt","1"]]),E("Rumänisches Kreuzheben KH",3,8,10,2,[["Hyperextensions mit Gewicht","1"]]),E("Hip Thrust Maschine",3,8,12,5,[["Glute-Bridge mit KH","1"]]),E("Beinbeuger liegend",3,10,15,2.5,[["Beinbeuger Maschine","1"]]),E("Wadenheben stehend",3,10,15,5,[["Wadenheben an der Beinpresse","1"]]),E("Bauchmaschine",2,10,15,2.5,[["Kabel-Crunches","1"]]),E("Hanging Leg Raises",2,8,15,0,[["Beinheben am Dipständer","1"]])]},
+    {id:"OB",label:"Oberkörper B",day:"Sa",ex:[E("Schrägbank KH",3,8,12,2,[["Schrägbank Multipresse","1"],["Schrägbank Langhantel","x"]]),E("Latzug eng",3,8,12,2.5,[["Assistierte Klimmzüge eng","1"]]),E("Kabelrudern",3,10,12,2.5,[["Rudermaschine","1"]]),E("Butterfly Maschine",2,12,15,2.5,[["Kabelzug-Flys","1"]]),E("Face Pulls",2,15,20,2.5,[["Reverse Butterfly","1"]]),E("Hammer Curls",2,10,15,1,[["Seil-Curls am Kabel","1"]]),E("Overhead-Trizeps Kabel",2,10,15,2.5,[["KH-Overhead-Extension","1"]])]},
+    {id:"UB",label:"Unterkörper B (Po)",day:"Mo/Fr/So",ex:[E("Hip Thrust Maschine",3,6,10,5,[["Glute-Bridge mit KH","1"]]),E("Beinpresse Füße hoch",3,10,15,5,[["Hackenschmidt","1"]]),E("Abduktoren-Maschine",3,15,20,2.5,[["Seitliches Beinheben am Kabel","1"]]),E("Beinstrecker",2,12,15,2.5),E("Kabel-Crunches",2,12,15,2.5,[["Bauchmaschine","1"]]),E("Plank",2,30,60,0)]}]},
+  split4:{name:"OK/UK-Split 4× (alt)", weeks:12, start:"2026-10-26", days:[
     {id:"A",label:"Oberkörper A",day:"Di",ex:[E("Kurzhantel-Bankdrücken",4,6,10,2,[["Brustpresse","1"],["Langhantel-Bankdrücken","x"]]),E("Brustgestütztes Rudern Maschine",4,8,10,2.5,[["Kurzhantelrudern einarmig","1"]]),E("Schulterdrücken Maschine",3,8,10,2.5,[["KH-Schulterdrücken sitzend","1"],["Langhantel-Overhead-Press","x"]]),E("Latzug",3,8,12,2.5,[["Klimmzüge / Assist-Maschine","1"]]),E("Lateral Raises KH",3,12,15,1,[["Seitheben am Kabel","1"]]),E("KH-Curls",3,10,12,1,[["SZ-Curls","1"]]),E("Trizepsdrücken Kabel",3,10,12,2.5,[["Dip-Maschine","1"]])]},
     {id:"UK",label:"Unterkörper",day:"Do",ex:[E("Beinpresse",4,6,10,5,[["Hackenschmidt","1"],["Langhantel-Kniebeuge","x"]]),E("Rumänisches Kreuzheben KH",3,8,10,2,[["Rumänisches Kreuzheben Langhantel","1"]]),E("Bulgarian Split Squats KH",3,10,10,2,[["Ausfallschritte KH","1"]]),E("Beinbeuger Maschine",3,12,12,2.5,[["Beinbeuger sitzend/liegend","1"]]),E("Hanging Leg Raises",3,10,15,0,[["Kabel-Crunches","1"]])]},
     {id:"B",label:"Oberkörper B",day:"Sa",ex:[E("Schrägbank KH",4,8,12,2,[["Schrägbank Multipresse","1"],["Schrägbank Langhantel","x"]]),E("Latzug eng",3,10,12,2.5,[["Kabel-Pullover","1"]]),E("Kabelrudern",3,10,12,2.5,[["Rudermaschine","1"]]),E("Arnold Press",3,10,10,2,[["Schulterdrücken Maschine","1"]]),E("Face Pulls",3,15,15,2.5,[["Reverse Butterfly","1"]]),E("Hammer Curls",3,12,12,1,[["Seil-Curls am Kabel","1"]]),E("Overhead-Trizeps Kabel",3,12,12,2.5,[["KH-Overhead-Extension","1"]])]},
@@ -237,7 +254,7 @@ const S = {
   members:{}, sessions:{}, subs:{}, profiles:{}, weights:{},
   plan:null, planLoaded:false, pe:null, peDirty:false,
   tab: store.get("satzbuch-tab") || "training",
-  draft: store.get("satzbuch-draft2"),
+  draft: store.get("satzbuch-draft2"), choosing:false, confirmSwitch:false, notes:{}, lastResult:null,
   progEx: store.get("satzbuch-progex"), metric: store.get("satzbuch-metric") || "vol", selM:null, confirmDel:null, confirmDay:null
 };
 
@@ -283,11 +300,11 @@ function renderTraining(){
   const v = $("#view-training");
   if (!S.loaded || (S.uid && !S.planLoaded)){ v.innerHTML = `<div class="empty">Lade dein Satzbuch …</div>`; return; }
   if (!S.uid){ v.innerHTML = `<div class="note">Melde dich bei Claude an, um deinen Plan und deine Einheiten zu speichern.</div>`; return; }
-  if (!S.plan || !S.plan.days?.length){ v.innerHTML = templatePicker(); return; }
+  if (!S.plan || !S.plan.days?.length || S.choosing){ v.innerHTML = templatePicker(); return; }
   if (!draftValid()){ S.draft = newDraft(S.draft && S.plan.days.some(d=>d.id===S.draft.dayId) ? S.draft.dayId : defaultDay()); saveDraft(); }
   const d = S.draft, day = S.plan.days.find(x=>x.id===d.dayId);
   const w = planWeek(S.plan, parseYmd(d.date));
-  let h = `<div class="daypick" role="group" aria-label="Einheit wählen">` +
+  let h = resultBlock() + switchBlock() + `<div class="daypick" role="group" aria-label="Einheit wählen">` +
     S.plan.days.map(p => `<button type="button" data-day="${esc(p.id)}" aria-pressed="${p.id===d.dayId}"><b>${esc(p.label||"Tag")}</b><span>${esc(p.day||"–")} · ${p.ex.length} Übungen</span></button>`).join("") + `</div>`;
   h += `<div class="row" style="flex-wrap:nowrap"><label class="label" for="sdate">Datum</label><input type="date" id="sdate" value="${esc(d.date)}" style="max-width:180px">` +
        (w>0 && w<=(S.plan.weeks||99) ? `<span class="muted" style="font-size:13px">Woche ${w}/${S.plan.weeks}${phaseText(S.plan,w)?" · "+esc(phaseText(S.plan,w)):""}</span>` : "") + `</div>`;
@@ -309,6 +326,7 @@ function renderTraining(){
         <input id="kg-${ei}-${si}" inputmode="decimal" data-f="kg" data-ex="${ei}" data-set="${si}" value="${esc(s.kg)}" placeholder="${esc(last?.sets[si]?.kg ?? "kg")}" aria-label="Gewicht Satz ${si+1}">
         <input id="rp-${ei}-${si}" inputmode="numeric" data-f="reps" data-ex="${ei}" data-set="${si}" value="${esc(s.reps)}" placeholder="${esc(last?.sets[si]?.reps ?? ex.r[1])}" aria-label="Wiederholungen Satz ${si+1}">
         <button type="button" class="chk" data-done="${ei}-${si}" aria-pressed="${s.done}" aria-label="Satz erledigt">✓</button></div>`).join("")}</div>
+      <label class="exnote" for="note-${ei}"><span class="label">Notiz</span><input type="text" id="note-${ei}" data-note="${esc(e.name)}" value="${esc(S.notes[e.name]||"")}" placeholder="z. B. Sitz 4, Polster Stufe 2" maxlength="80"></label>
       <div class="row"><button type="button" class="btn small" data-addset="${ei}">+ Satz</button>${e.sets.length>1?`<button type="button" class="btn small" data-delset="${ei}">− Satz</button>`:""}</div>
       </div></article>`;
   });
@@ -319,9 +337,17 @@ function renderTraining(){
   h += historyBlock();
   v.innerHTML = h;
 }
+function switchBlock(){
+  if (!S.plan) return "";
+  if (!S.confirmSwitch) return `<div class="row" style="justify-content:space-between;flex-wrap:nowrap"><span class="label" style="min-width:0;overflow-wrap:anywhere">Plan: ${esc(S.plan.name||"Mein Plan")}</span><button type="button" class="btn small" id="switch-ask">Plan wechseln</button></div>`;
+  return `<div class="note"><b style="font:700 20px var(--f-display);text-transform:uppercase">Plan wechseln?</b>
+    <span style="font-size:14px">Du gehst zurück zur Startseite und wählst eine Vorlage oder startest leer. Dein aktueller Plan „${esc(S.plan.name||"Mein Plan")}“ wird ersetzt, sobald du einen neuen wählst. Deine gespeicherten Einheiten, Fortschritte und dein Körpergewicht bleiben erhalten.${draftTouched()?" Die angefangene Einheit wird verworfen.":""}</span>
+    <div class="row"><button type="button" class="btn primary" id="switch-yes">Ja, Plan wechseln</button><button type="button" class="btn ghost" id="switch-no">Abbrechen</button></div></div>`;
+}
 function templatePicker(){
-  return `<div class="stack"><h2 style="font-size:28px">Dein Trainingsplan</h2>
+  return `<div class="stack"><h2 style="font-size:28px">${S.choosing&&S.plan?"Neuen Plan wählen":"Dein Trainingsplan"}</h2>
     <p class="muted" style="margin:0">Starte mit einer Vorlage und passe sie im Tab „Plan“ an, oder baue deinen Plan von Grund auf.</p>
+    ${S.choosing&&S.plan?`<button type="button" class="btn" id="choose-cancel">← Abbrechen, „${esc(S.plan.name||"Mein Plan")}“ behalten</button>`:""}
     <div class="tpl">${Object.entries(TEMPLATES).map(([k,t])=>`<button type="button" data-tplpick="${k}"><b>${esc(t.name)}</b><span class="muted" style="font-size:13px">${t.days.map(d=>esc(d.label)+" ("+esc(d.day)+")").join(" · ")}</span></button>`).join("")}
     <button type="button" data-tplpick="empty"><b>Leer starten</b><span class="muted" style="font-size:13px">Eigene Tage und Übungen anlegen</span></button></div></div>`;
 }
@@ -333,7 +359,7 @@ function historyBlock(){
   if (!list.length) return `<div class="stack" style="gap:8px;margin-top:10px"><h2 style="font-size:24px">Letzte Einheiten</h2><div class="empty">Deine gespeicherten Einheiten erscheinen hier.</div></div>`;
   return `<div style="margin-top:10px"><h2 style="font-size:24px;margin-bottom:8px">Letzte Einheiten</h2><div class="list">` + list.map(s => `
     <div class="li"><div><b>${esc(s.dayLabel||"Einheit")}</b> <span class="muted num">${fmtDate(s.date)}</span><br>
-      <span class="muted num" style="font-size:12px">${(s.exercises||[]).reduce((a,e)=>a+e.sets.length,0)} Sätze · ${fmtKg(s.volume||0)} kg${s.warmup?" · Laufband ✓":""}</span></div>
+      <span class="muted num" style="font-size:12px">${(s.exercises||[]).reduce((a,e)=>a+e.sets.length,0)} Sätze · ${fmtKg(s.volume||0)} kg${s.durationMin?" · "+s.durationMin+" Min":""}${s.warmup?" · Laufband ✓":""}</span>${s.prs&&s.prs.length?` <span class="pr">${s.prs.length} PR</span>`:""}</div>
       <button type="button" class="btn small ${S.confirmDel===s.id?"primary":""}" data-del="${esc(s.id)}">${S.confirmDel===s.id?"Wirklich löschen":"Löschen"}</button></div>`).join("") + `</div></div>`;
 }
 
@@ -346,7 +372,7 @@ function renderPlan(){
   if (!S.pe) S.pe = clone(S.plan);
   const p = S.pe;
   const mOpts = (sel, allowNone) => (allowNone?`<option value="">–</option>`:"") + Object.entries(MUSCLES).map(([k,l])=>`<option value="${k}" ${k===sel?"selected":""}>${esc(l)}</option>`).join("");
-  let h = `<datalist id="lib">${Object.keys(LIB).map(n=>`<option value="${esc(n)}"></option>`).join("")}</datalist>
+  let h = switchBlock() + `<datalist id="lib">${Object.keys(LIB).map(n=>`<option value="${esc(n)}"></option>`).join("")}</datalist>
     <div class="note pehead">
       <label class="label" style="display:grid;gap:2px">Planname<input type="text" id="pe-name" value="${esc(p.name)}" maxlength="40"></label>
       <label class="label" style="display:grid;gap:2px">Start (Montag)<input type="date" id="pe-start" value="${esc(p.start||"")}"></label>
@@ -383,7 +409,6 @@ function renderPlan(){
     <div class="savebar"><button type="button" class="btn ghost" id="pe-reset" ${S.peDirty?"":"disabled"}>Änderungen verwerfen</button>
     <span class="num" style="font-size:12px">${S.peDirty?"Ungespeichert":"Gespeichert"}</span>
     <button type="button" class="btn primary" id="pe-save" ${S.peDirty&&!S.readOnly?"":"disabled"}>Plan speichern</button></div>
-    <details><summary>Neu mit Vorlage starten</summary><div style="margin-top:10px">${templatePicker()}</div></details>
     ${backupBlock()}`;
   v.innerHTML = h;
 }
@@ -561,14 +586,19 @@ document.addEventListener("click", async ev => {
   const ds = b.dataset;
   if (ds.tab){ S.tab=ds.tab; store.set("satzbuch-tab",S.tab); render(); return; }
   if (ds.day){ if (ds.day!==S.draft?.dayId){ S.draft=newDraft(ds.day); saveDraft(); render(); } return; }
-  if (ds.done){ const [e,s]=ds.done.split("-").map(Number); const st=S.draft.ex[e].sets[s]; st.done=!st.done; b.setAttribute("aria-pressed",st.done); saveDraft(); return; }
+  if (ds.done){ const [e,s]=ds.done.split("-").map(Number); const st=S.draft.ex[e].sets[s]; st.done=!st.done; b.setAttribute("aria-pressed",st.done); startClock(); saveDraft(); return; }
+  if (b.id==="result-close"){ S.lastResult=null; render(); return; }
   if (ds.addset){ const e=S.draft.ex[+ds.addset]; const l=e.sets[e.sets.length-1]; e.sets.push({kg:l?.kg||"",reps:"",done:false}); saveDraft(); render(); return; }
   if (ds.delset){ S.draft.ex[+ds.delset].sets.pop(); saveDraft(); render(); return; }
-  if (b.id==="reset"){ S.draft=newDraft(S.draft.dayId); saveDraft(); render(); toast("Einheit verworfen"); return; }
+  if (b.id==="reset"){ S.draft=newDraft(S.draft.dayId); saveDraft(); updateClock(); render(); toast("Einheit verworfen"); return; }
   if (b.id==="save") return saveSession();
   if (ds.del){ if (S.confirmDel!==ds.del){ S.confirmDel=ds.del; render(); return; }
     const id=ds.del; S.confirmDel=null; const all=S.sessions[S.uid]; S.sessions[S.uid]=all.filter(x=>x.id!==id); if (persist("sessions")) toast("Einheit gelöscht"); else S.sessions[S.uid]=all; render(); return; }
   if (ds.tplpick) return pickTemplate(ds.tplpick);
+  if (b.id==="switch-ask"){ S.confirmSwitch=true; render(); return; }
+  if (b.id==="switch-no"){ S.confirmSwitch=false; render(); return; }
+  if (b.id==="switch-yes"){ S.confirmSwitch=false; S.choosing=true; S.tab="training"; store.set("satzbuch-tab","training"); render(); window.scrollTo(0,0); return; }
+  if (b.id==="choose-cancel"){ S.choosing=false; render(); return; }
   if (ds.metric){ S.metric=ds.metric; store.set("satzbuch-metric",S.metric); render(); return; }
   if (ds.rk){ S.selM = S.selM===ds.rk?null:ds.rk; render(); return; }
   // plan editor
@@ -589,8 +619,9 @@ document.addEventListener("click", async ev => {
 document.addEventListener("keydown", ev => { if ((ev.key==="Enter"||ev.key===" ") && ev.target.matches?.("[data-m]")){ ev.preventDefault(); ev.target.dispatchEvent(new MouseEvent("click",{bubbles:true})); } });
 document.addEventListener("input", ev => {
   const t = ev.target;
-  if (t.dataset.f){ S.draft.ex[+t.dataset.ex].sets[+t.dataset.set][t.dataset.f]=t.value; saveDraft(); }
-  else if (t.id==="warm"){ S.draft.warmup=t.checked; saveDraft(); }
+  if (t.dataset.f){ S.draft.ex[+t.dataset.ex].sets[+t.dataset.set][t.dataset.f]=t.value; if (t.value) startClock(); saveDraft(); }
+  else if (t.id==="warm"){ S.draft.warmup=t.checked; if (t.checked) startClock(); saveDraft(); }
+  else if (t.dataset.note!==undefined){ const v=t.value.trim(); if (v) S.notes[t.dataset.note]=v; else delete S.notes[t.dataset.note]; clearTimeout(S.noteT); S.noteT=setTimeout(()=>persist("notes"),400); }
   else if (t.id==="sdate"){ S.draft.date=t.value||ymd(new Date()); saveDraft(); }
   else if (t.dataset.px){ peSet(t.dataset.px, t.value); markDirty(); }
   else if (t.dataset.pd){ const [di,f]=t.dataset.pd.split("."); S.pe.days[+di][f]=t.value; S.peDirty=true; markDirty(); }
@@ -610,12 +641,13 @@ document.addEventListener("change", ev => {
 });
 
 /* ---------- Local storage (everything stays on this phone) ---------- */
-const KEYS = {plan:"sb-plan", sessions:"sb-sessions", weights:"sb-weights"};
+const KEYS = {plan:"sb-plan", sessions:"sb-sessions", weights:"sb-weights", notes:"sb-notes"};
 function persist(what){
   try{
     if (what==="plan") localStorage.setItem(KEYS.plan, JSON.stringify(S.plan));
     if (what==="sessions") localStorage.setItem(KEYS.sessions, JSON.stringify(S.sessions[S.uid]||[]));
     if (what==="weights") localStorage.setItem(KEYS.weights, JSON.stringify(S.weights||{}));
+    if (what==="notes") localStorage.setItem(KEYS.notes, JSON.stringify(S.notes||{}));
     return true;
   }catch(e){ toast("Speichern fehlgeschlagen: Speicher voll oder gesperrt. Bitte ein Backup exportieren."); return false; }
 }
@@ -629,8 +661,9 @@ function pickTemplate(k){
   const p = k==="empty" ? {name:"Mein Plan",start:ymd(monday(new Date())),weeks:12,days:[{id:uid6(),label:"Tag 1",day:"",ex:[]}]} : clone(TEMPLATES[k]);
   if (!p.start) p.start = ymd(monday(new Date()));
   p.days.forEach(d=>d.ex.forEach(x=>x.id=uid6()));
+  S.choosing=false;
   if (k==="empty"){ S.pe=p; S.peDirty=true; S.tab="plan"; store.set("satzbuch-tab","plan"); render(); return; }
-  if (writePlan(p)){ S.pe=null; S.peDirty=false; S.draft=null; toast("Plan übernommen. Im Tab „Plan“ anpassen."); }
+  if (writePlan(p)){ S.pe=null; S.peDirty=false; S.draft=null; store.del("satzbuch-draft2"); toast("Plan übernommen. Im Tab „Plan“ anpassen."); }
   render();
 }
 function savePlan(){
@@ -643,9 +676,46 @@ function saveSession(){
   const exercises = d.ex.map((e,i)=>({name:e.name, mg:musclesFor(e.name, day.ex[i]?.mg), sets:cleanSets(e.sets)})).filter(e=>e.sets.length);
   if (!exercises.length){ toast("Trage mindestens einen Satz mit Wiederholungen ein"); return; }
   const all = S.sessions[S.uid]||[];
-  S.sessions[S.uid] = [{id:uid6(), date:d.date, dayId:d.dayId, dayLabel:day.label, warmup:!!d.warmup, exercises, volume:Math.round(volume(exercises)), createdAt:Date.now()}, ...all];
+  const prs = findPRs(exercises, all);
+  const durationMin = d.startedAt ? Math.max(1, Math.round((Date.now()-d.startedAt)/60000)) : null;
+  S.sessions[S.uid] = [{id:uid6(), date:d.date, dayId:d.dayId, dayLabel:day.label, warmup:!!d.warmup, exercises, volume:Math.round(volume(exercises)), durationMin, prs:prs.map(p=>p.name), createdAt:Date.now()}, ...all];
   if (!persist("sessions")){ S.sessions[S.uid]=all; return; }
-  S.draft=null; store.del("satzbuch-draft2"); toast("Einheit gespeichert"); render();
+  S.lastResult = {label:day.label, durationMin, sets:exercises.reduce((a,e)=>a+e.sets.length,0), volume:Math.round(volume(exercises)), prs};
+  S.draft=null; store.del("satzbuch-draft2"); updateClock(); toast(prs.length?(prs.length===1?"Neuer Bestwert!":prs.length+" neue Bestwerte!"):"Einheit gespeichert"); render(); window.scrollTo(0,0);
+}
+
+/* ---------- Clock, best values ---------- */
+function startClock(){ if (S.draft && !S.draft.startedAt){ S.draft.startedAt=Date.now(); S.lastResult=null; updateClock(); } }
+function updateClock(){
+  const bar=$("#runbar"); if (!bar) return;
+  const st=S.draft?.startedAt;
+  if (!st){ bar.hidden=true; return; }
+  bar.hidden=false;
+  const sec=Math.max(0,Math.floor((Date.now()-st)/1000)), h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), ss=sec%60;
+  $("#runtime").textContent = (h?h+":"+pad(m):m)+":"+pad(ss);
+}
+function findPRs(exercises, previous){
+  const out=[];
+  exercises.forEach(e => {
+    const old = previous.flatMap(s=>(s.exercises||[]).filter(x=>x.name===e.name).flatMap(x=>x.sets));
+    if (!old.length) return;
+    const best = sets => sets.reduce((m,x)=>Math.max(m,e1rm(x.kg,x.reps)),0);
+    const nb=best(e.sets), ob=best(old);
+    if (nb>0 && nb>ob+0.01){
+      const top=e.sets.reduce((a,x)=>e1rm(x.kg,x.reps)>e1rm(a.kg,a.reps)?x:a, e.sets[0]);
+      out.push({name:e.name, text:fmtKg(top.kg)+" kg × "+top.reps+" (1RM ≈ "+fmtKg(Math.round(nb))+" kg, vorher "+fmtKg(Math.round(ob))+")"});
+    } else if (nb===0 && ob===0){
+      const nr=Math.max(...e.sets.map(x=>x.reps)), or=Math.max(...old.map(x=>x.reps));
+      if (nr>or) out.push({name:e.name, text:nr+" Wdh. (vorher "+or+")"});
+    }
+  });
+  return out;
+}
+function resultBlock(){
+  const r=S.lastResult; if (!r) return "";
+  return `<section class="prbox"><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h2>${r.prs.length?"Neue Bestwerte":"Einheit gespeichert"}</h2><button type="button" class="btn small" id="result-close" aria-label="Schließen">OK</button></div>
+    <span class="num" style="font-size:13px">${esc(r.label)}${r.durationMin?" · "+r.durationMin+" Min":""} · ${r.sets} Sätze · ${fmtKg(r.volume)} kg</span>
+    ${r.prs.length?`<ul style="margin:0;padding-left:18px">${r.prs.map(p=>`<li><b>${esc(p.name)}</b>: <span class="num">${esc(p.text)}</span></li>`).join("")}</ul>`:""}</section>`;
 }
 
 /* ---------- Backup ---------- */
@@ -662,7 +732,7 @@ function backupBlock(){
   return h + `</section>`;
 }
 function exportData(){
-  const data = {app:"satzbuch", version:1, exportedAt:new Date().toISOString(), plan:S.plan, sessions:S.sessions[S.uid]||[], weights:S.weights||{}};
+  const data = {app:"satzbuch", version:1, exportedAt:new Date().toISOString(), plan:S.plan, sessions:S.sessions[S.uid]||[], weights:S.weights||{}, notes:S.notes||{}};
   const name = "satzbuch-backup-"+ymd(new Date())+".json";
   if (window.AndroidBridge){ const ok = window.AndroidBridge.saveBackup(name, JSON.stringify(data)); toast(ok ? "Backup im Download-Ordner gespeichert" : "Backup konnte nicht gespeichert werden"); return; }
   const blob = new Blob([JSON.stringify(data)], {type:"application/json"});
@@ -691,6 +761,7 @@ function applyImport(){
   S.sessions[S.uid] = [...(S.sessions[S.uid]||[]), ...d.sessions.filter(x=>x && x.id && !have.has(x.id))];
   if (d.plan) S.plan = d.plan;
   S.weights = {...S.weights, ...(d.weights||{})};
+  S.notes = {...S.notes, ...(d.notes||{})}; persist("notes");
   if (persist("sessions") && persist("plan") && persist("weights")){ toast("Backup importiert"); S.pe=null; S.peDirty=false; S.draft=null; }
   else { S.plan=before.plan; S.sessions[S.uid]=before.sessions; S.weights=before.weights; persist("sessions"); persist("plan"); persist("weights"); }
   S.pendingImport=null; render();
@@ -702,8 +773,11 @@ function boot(){
   S.plan = store.get(KEYS.plan);
   S.sessions[S.uid] = store.get(KEYS.sessions) || [];
   S.weights = store.get(KEYS.weights) || {};
+  S.notes = store.get(KEYS.notes) || {};
+  setInterval(updateClock, 1000);
+  try{ if (navigator.wakeLock){ const wl=()=>navigator.wakeLock.request("screen").catch(()=>{}); wl(); document.addEventListener("visibilitychange",()=>{ if (document.visibilityState==="visible") wl(); }); } }catch(e){}
   try{ navigator.storage && navigator.storage.persist && navigator.storage.persist(); }catch(e){}
-  render();
+  render(); updateClock();
 }
 boot();
 })();
